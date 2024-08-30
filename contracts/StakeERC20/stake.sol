@@ -13,4 +13,34 @@ pragma solidity ^0.8.17;
 //The contract should handle ERC20 token transfers securely and efficiently.
 
 
-contract StakeERC20 {}
+contract StakeERC20 {
+
+    
+    mapping(address => uint256) private _balances;
+   
+
+    uint256 public constant DURATION = 7 days;
+
+    function deposit(uint256 amount) external payable {
+        // Deposit Ether to stake
+
+
+    }
+
+    function withdraw() external payable {
+        // Withdraw staked Ether and rewards
+    }
+
+    function stakingInterest(uint256 amount, uint256 noOfDays, uint256 year) private pure returns (uint256) {
+      
+       // Simple Interest = Principal × Rate × Time
+        // divide days by year to get the APY
+       return amount * (noOfDays / year);
+    }
+
+    
+
+    function claimReward() external {
+        // Claim the reward earned by the user
+    }
+}
