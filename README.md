@@ -1,14 +1,2 @@
-# Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.ts
-```
-# StakingRewardEthereum
+# Staking ether and ERC20 on Ethereum
+[ERC20 deployed link](https://sepolia-blockscout.lisk.com/address/0x03C65002d5c567632e5c9B233F0d55241644A8b1#code)

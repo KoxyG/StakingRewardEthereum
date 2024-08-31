@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 import "../Interfaces/IERC20.sol";
-import "./Erc20.sol";
+
 
 //Write an Ether staking smart contract that allows users to stake Ether for a specified period.
 
