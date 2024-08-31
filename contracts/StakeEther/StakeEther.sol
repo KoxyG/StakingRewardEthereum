@@ -27,8 +27,8 @@ contract StakeEther {
 
 
     // deploy contract with ether to use as reward in paying stakers
-    constructor() payable {
-        require(msg.value > 0, "Must deploy with Ether");
+    constructor()  {
+        // require(msg.value > 0, "Must deploy with Ether");
       
     }
 
@@ -99,5 +99,7 @@ contract StakeEther {
     function getContractBalance() external view returns  (uint256) {
         return address(this).balance;
     }
+
+    receive() external payable {}
 
 }
