@@ -20,16 +20,19 @@ contract StakeERC20 {
         uint256 amountStaked;
         bool isStaked;
     }
-
     mapping(address => Stake) public _stakers;
+
 
     IERC20 public rewardToken;
     uint256 public interestRate = 10; // Interest rate as a percentage
+
+
 
     constructor(address _rewardToken) {
         rewardToken = IERC20(_rewardToken);
     }
 
+    // function to stake tokens
     function stake(uint256 _amount) external {
         require(_amount > 0, "Amount must be greater than 0");
 
@@ -53,12 +56,17 @@ contract StakeERC20 {
         Stake storage staker = _stakers[msg.sender];
         require(staker.isStaked, "No stake found");
 
+
+        // calculate interest
         uint256 interest = calculateInterest(staker.stakingStartTime, staker.amountStaked);
         uint256 amountToPay = staker.amountStaked + interest;
+
 
         // Transfer the staked amount and interest to the user
         bool success = rewardToken.transfer(msg.sender, amountToPay);
         require(success, "Token transfer failed");
+        staker.amountStaked = 0;
+        staker.stakingStartTime = 0;
 
         // Update stake status
         staker.isStaked = false;
@@ -68,10 +76,13 @@ contract StakeERC20 {
         Stake storage staker = _stakers[msg.sender];
         require(staker.isStaked, "No stake found");
 
+        // calculate interest
         uint256 interest = calculateInterest(staker.stakingStartTime, staker.amountStaked);
         return interest + staker.amountStaked;
     }
 
+
+    // function to calculate interest based on staking duration
     function calculateInterest(uint256 stakingStartTime, uint256 amountStaked) private view returns (uint256) {
         uint256 stakingDuration = block.timestamp - stakingStartTime;
         uint256 stakingDurationInDays = stakingDuration / 1 days;
@@ -81,6 +92,7 @@ contract StakeERC20 {
         return interest;
     }
 
+    // function to get the contract balance
     function getContractBalance() external view returns (uint256) {
         return rewardToken.balanceOf(address(this));
     }

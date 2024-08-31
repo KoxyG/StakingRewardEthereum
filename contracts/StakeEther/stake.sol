@@ -64,6 +64,9 @@ contract StakeEther {
 
         (bool sent,) = msg.sender.call{value: amountToPay}("");
         require(sent, "Failed to send Ether");
+        staker.amountStaked = 0;
+        staker.stakingStartTime = 0;
+        
         staker.isStaked = false;
     }
 
