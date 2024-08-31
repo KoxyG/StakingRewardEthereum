@@ -13,4 +13,8 @@ contract MyERC20 is ERC20 {
 
     }
 
+    function mint(address to, uint256 amount) internal {
+        _mint(to, amount);
+    }
+
 }

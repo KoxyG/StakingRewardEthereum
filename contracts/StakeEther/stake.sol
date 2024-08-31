@@ -12,9 +12,9 @@ pragma solidity ^0.8.17;
 //Ensure the contract is secure, especially in handling users’ funds and calculating rewards.
 
 
+
 contract StakeEther {
 
-    uint public immutable rewardsPerHour = 1000; // 0.01%
 
    struct Stake {
         uint256 stakingStartTime;
@@ -23,6 +23,7 @@ contract StakeEther {
     }
     mapping(address => Stake) public _stakers;
 
+    uint256 public interestRate = 10; // 10% interest rate
 
 
     // deploy contract with ether to use as reward in paying stakers
@@ -38,7 +39,7 @@ contract StakeEther {
 
         
          // Calculate the end time for staking
-        uint256 stakingStart = block.timestamp;
+        uint256 stakingStart = block.timestamp + 1 days;
         Stake memory newStake = Stake(
             {
                 stakingStartTime: stakingStart,
@@ -56,7 +57,8 @@ contract StakeEther {
         require(staker.isStaked == true, "Not staked");
 
 
-        uint256 Interest = calculateInterest(staker.stakingStartTime);
+        
+        uint256 Interest = calculateInterest(staker.stakingStartTime, staker.amountStaked);
         
         uint256 amountToPay = staker.amountStaked + Interest;
 
@@ -73,28 +75,26 @@ contract StakeEther {
         require(staker.isStaked == true, "Not staked");
 
         
-        uint256 interest = calculateInterest(staker.stakingStartTime);
+        uint256 interest = calculateInterest(staker.stakingStartTime, staker.amountStaked);
      
         
         return interest + staker.amountStaked;
     }
 
 
-    function calculateInterest(uint256 stakingStartTime) private view returns (uint256) {
-        Stake storage staker = _stakers[msg.sender]; 
-        // Calculate the duration
-        uint256 stakingDuration = (block.timestamp - stakingStartTime) / 365 days;
-      
-         // Calculate the interest rate for the given period
-        uint256 interest = (stakingDuration * staker.amountStaked);
+
+
+    function calculateInterest(uint256 stakingStartTime, uint256 amountStaked) private view returns (uint256) {
+        uint256 stakingDuration = block.timestamp - stakingStartTime;
+        uint256 stakingDurationInDays = stakingDuration / 1 days; // converting the staking duration from seconds into days
+
+        uint256 interest = (amountStaked * interestRate * stakingDurationInDays) / 100;
+
         return interest;
     }
 
     function getContractBalance() external view returns  (uint256) {
         return address(this).balance;
     }
-
-    
-
 
 }
