@@ -14,34 +14,34 @@ pragma solidity ^0.8.17;
 
 contract StakeEther {
 
-    uint256 private annualRate;
+    uint public immutable rewardsPerHour = 1000; // 0.01%
 
    struct Stake {
         uint256 stakingStartTime;
         uint256 amountStaked;
         bool isStaked;
     }
-    mapping(address => Stake) private _stakers;
+    mapping(address => Stake) public _stakers;
 
 
 
     // deploy contract with ether to use as reward in paying stakers
-    constructor(uint256 _annualRate) payable {
-        annualRate = _annualRate;
+    constructor() payable {
+        require(msg.value > 0, "Must deploy with Ether");
+      
     }
 
 
 
-    function stake(uint256 daysToStake) external payable {
+    function stake() external payable {
         require(msg.value > 0, "Amount must be greater than 0");
-        require(!_stakers[msg.sender].isStaked, "Already staked");
 
         
          // Calculate the end time for staking
-        uint256 stakingEndTime = block.timestamp;
+        uint256 stakingStart = block.timestamp;
         Stake memory newStake = Stake(
             {
-                daysToStake: stakingEndTime,
+                stakingStartTime: stakingStart,
                 amountStaked: msg.value,
                 isStaked: true
             }
@@ -56,40 +56,42 @@ contract StakeEther {
         require(staker.isStaked == true, "Not staked");
 
 
-        uint256 calculateInterest = stakingInterest(staker.amountStaked, staker.stakingStartTime);
+        uint256 Interest = calculateInterest(staker.stakingStartTime);
         
-        uint256 amountToPay = staker.amountStaked + calculateInterest;
+        uint256 amountToPay = staker.amountStaked + Interest;
 
-        (bool sent, bytes memory data) = msg.sender.call{value: amountToPay}("");
+        (bool sent,) = msg.sender.call{value: amountToPay}("");
         require(sent, "Failed to send Ether");
+        staker.isStaked = false;
     }
+
 
     function showCurrentInterest() external view returns (uint256) {
 
         Stake storage staker = _stakers[msg.sender];
 
         require(staker.isStaked == true, "Not staked");
-        
-        uint256 interest = calculateInterest(staker.amountStaked, staker.daysToStake);
 
+        
+        uint256 interest = calculateInterest(staker.stakingStartTime);
+     
+        
         return interest + staker.amountStaked;
     }
 
 
-    function calculateInterest(uint256 amount, uint256 stakingStartTime) private view returns (uint256) {
-           
-       // simple interest = principal * rate * time
-
-
-        // Calculate the duration in days
-        uint256 stakingDuration = (block.timestamp - stakingStartTime) / 1 days;
-         // Calculate the fraction of the year
-        uint256 fractionOfYear = (stakingDuration * 1e18) / 365 days; // Using 365 days for a year
+    function calculateInterest(uint256 stakingStartTime) private view returns (uint256) {
+        Stake storage staker = _stakers[msg.sender]; 
+        // Calculate the duration
+        uint256 stakingDuration = (block.timestamp - stakingStartTime) / 365 days;
+      
          // Calculate the interest rate for the given period
-        uint256 interest = (annualRate * fractionOfYear) / 1e18;
-
-
+        uint256 interest = (stakingDuration * staker.amountStaked);
         return interest;
+    }
+
+    function getContractBalance() external view returns  (uint256) {
+        return address(this).balance;
     }
 
     
