@@ -26,6 +26,9 @@ contract StakeERC20 {
     IERC20 public rewardToken;
     uint256 public interestRate = 10; // Interest rate as a percentage
 
+    event Skaked(address indexed sender, uint256 amount);
+    event Unstaked(address indexed to, uint256 amount);
+
 
 
     constructor(address _rewardToken) {
@@ -50,6 +53,8 @@ contract StakeERC20 {
         });
 
         _stakers[msg.sender] = newStake;
+
+        emit Skaked(msg.sender, _amount);
     }
 
     function unstake() external {
@@ -70,6 +75,8 @@ contract StakeERC20 {
 
         // Update stake status
         staker.isStaked = false;
+
+        emit Unstaked(msg.sender, amountToPay);
     }
 
     function showCurrentInterest() external view returns (uint256) {
