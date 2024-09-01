@@ -52,7 +52,7 @@ contract StakeEther {
     }
 
     function unstake() external payable {
-        Stake storage staker = _stakers[msg.sender];
+        Stake memory staker = _stakers[msg.sender];
         // Withdraw staked Ether and rewards
         require(staker.isStaked == true, "Not staked");
 
@@ -73,7 +73,7 @@ contract StakeEther {
 
     function showCurrentInterest() external view returns (uint256) {
 
-        Stake storage staker = _stakers[msg.sender];
+        Stake memory staker = _stakers[msg.sender];
 
         require(staker.isStaked == true, "Not staked");
 
@@ -91,6 +91,7 @@ contract StakeEther {
         uint256 stakingDuration = block.timestamp - stakingStartTime;
         uint256 stakingDurationInDays = stakingDuration / 1 days; // converting the staking duration from seconds into days
 
+        // work on the total staked an also add option on the days to staked.
         uint256 interest = (amountStaked * interestRate * stakingDurationInDays) / 100;
 
         return interest;

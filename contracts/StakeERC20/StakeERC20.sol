@@ -94,6 +94,7 @@ contract StakeERC20 {
         uint256 stakingDuration = block.timestamp - stakingStartTime;
         uint256 stakingDurationInDays = stakingDuration / 1 days;
 
+         // work on the total staked an also add option on the days to staked.
         uint256 interest = (amountStaked * interestRate * stakingDurationInDays) / 100;
 
         return interest;
